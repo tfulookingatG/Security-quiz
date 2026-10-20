@@ -1,6 +1,6 @@
 # Security Quiz
 
-A command-line quiz that measures how well you protect yourself online. You get a score out of 100, a rating, and personal tips on how to improve. You can also test the strength of your password.
+A command-line quiz that measures how well you protect yourself online. You get a score out of 100, a rating, and tips on how to improve. You can also test the strength of your password.
 
 ## Features
 
