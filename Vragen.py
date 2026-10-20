@@ -1,4 +1,5 @@
 import getpass
+import os
 
 # (question, weight, tip)
 questions = [
@@ -17,6 +18,10 @@ questions = [
     ("Do you have a screen lock (PIN/password) on your phone and PC?", 20,
      "Without a screen lock, anyone who finds your device has instant access to everything."),
 ]
+
+
+def clear_screen():
+    os.system("cls" if os.name == "nt" else "clear")
 
 
 def ask_question(question):
@@ -103,6 +108,7 @@ def test_password():
         print("Very weak. Change this password as soon as possible.")
 
 
+# --- Ask all questions ---
 score = 0
 tips = []
 
@@ -112,7 +118,13 @@ for question, weight, tip in questions:
     else:
         tips.append((weight, tip))
 
+# --- Clear the screen and show only the results ---
+clear_screen()
+
 label, comment = rate(score)
+print("=" * 40)
+print("  SECURITY QUIZ RESULTS")
+print("=" * 40)
 print(f"\nScore: {score}/100 - {label}")
 print(comment)
 
@@ -122,7 +134,7 @@ if tips:
     for weight, tip in tips:
         print(f"- {tip}")
 
-# Bonus: password tester (not part of the score)
+# --- Bonus: password tester (not part of the score) ---
 print()
 if ask_question("Bonus: would you like to test how strong your password is?"):
     test_password()
