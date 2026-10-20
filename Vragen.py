@@ -1,3 +1,5 @@
+import getpass
+
 # (question, weight, tip)
 questions = [
     ("Do you use different passwords for different accounts?", 20,
@@ -57,6 +59,50 @@ def rate(score):
             "The good news is that every tip below is quick to fix and makes an immediate difference.")
 
 
+def test_password():
+    """Rates a password out of 10: up to 6 points for length, 1 point per character type."""
+    password = getpass.getpass("\nType the password you want to test (it stays hidden): ")
+    length = len(password)
+
+    # Length criteria (max 6 points)
+    if length >= 15:
+        length_points, length_label = 6, "Excellent"
+    elif length >= 12:
+        length_points, length_label = 5, "Good"
+    elif length >= 9:
+        length_points, length_label = 3, "Better, but not good yet"
+    else:
+        length_points, length_label = 1, "Weak"
+
+    # Character criteria (1 point each)
+    checks = [
+        ("Uppercase letter", any(c.isupper() for c in password)),
+        ("Lowercase letter", any(c.islower() for c in password)),
+        ("Number", any(c.isdigit() for c in password)),
+        ("Special character", any(not c.isalnum() for c in password)),
+    ]
+    char_points = sum(1 for _, passed in checks if passed)
+
+    total = length_points + char_points
+
+    print("\n--- Password test ---")
+    print(f"Length ({length} characters): {length_label} ({length_points}/6)")
+    for name, passed in checks:
+        print(f"{name}: {'Yes' if passed else 'Missing'} ({1 if passed else 0}/1)")
+
+    print(f"\nPassword score: {total}/10")
+    if total >= 9:
+        print("Excellent. This password is long and varied, which makes it very hard to crack.")
+    elif total >= 7:
+        print("Good. This is a solid password, but a few extra characters or types would make it stronger.")
+    elif total >= 5:
+        print("Average. It can still be cracked fairly quickly, so make it longer and more varied.")
+    elif total >= 3:
+        print("Weak. Attackers could crack this quickly. Use at least 12 characters with all character types.")
+    else:
+        print("Very weak. Change this password as soon as possible.")
+
+
 score = 0
 tips = []
 
@@ -75,3 +121,8 @@ if tips:
     tips.sort(reverse=True)
     for weight, tip in tips:
         print(f"- {tip}")
+
+# Bonus: password tester (not part of the score)
+print()
+if ask_question("Bonus: would you like to test how strong your password is?"):
+    test_password()
