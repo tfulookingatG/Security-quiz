@@ -26,11 +26,35 @@ def ask_question(question):
 
 
 def rate(score):
-    if score >= 80:
-        return "Strong! You're doing well."
-    elif score >= 50:
-        return "Decent, but there is room for improvement."
-    return "Watch out, you have risks."
+    if score >= 90:
+        return ("Excellent",
+                "You are very well protected, and it shows that you take security seriously. "
+                "Your habits make you a hard target for most attackers. "
+                "Keep your good routines going and stay alert for new threats.")
+    elif score >= 80:
+        return ("Strong",
+                "You are well protected and clearly put real effort into your security. "
+                "Only a few small gaps remain. "
+                "Closing them will make you nearly untouchable for common attacks.")
+    elif score >= 60:
+        return ("Decent",
+                "You have a solid base, but some important gaps remain. "
+                "An attacker could still find an easy way in through them. "
+                "Work through the tips below, starting with the first one.")
+    elif score >= 40:
+        return ("Weak",
+                "Your security has serious gaps, and you are an easy target for common attacks. "
+                "A single leaked password or phishing mail could cause real damage. "
+                "Start with the top tips below, they will improve your score the fastest.")
+    elif score >= 20:
+        return ("Poor",
+                "Most of your accounts and devices are poorly protected. "
+                "It is likely only a matter of time before something goes wrong. "
+                "Take the tips below seriously and fix them one by one, starting today.")
+    return ("Very weak",
+            "You are barely protected at the moment, which suggests security is not on your radar yet. "
+            "Attackers will find you an easy and attractive target. "
+            "The good news is that every tip below is quick to fix and makes an immediate difference.")
 
 
 score = 0
@@ -42,8 +66,9 @@ for question, weight, tip in questions:
     else:
         tips.append((weight, tip))
 
-print(f"\nScore: {score}/100")
-print(rate(score))
+label, comment = rate(score)
+print(f"\nScore: {score}/100 - {label}")
+print(comment)
 
 if tips:
     print("\nTips (most important first):")
