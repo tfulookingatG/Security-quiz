@@ -1,5 +1,7 @@
 import getpass
 import os
+import secrets
+import string
 
 # (question, weight, tip)
 questions = [
@@ -18,6 +20,9 @@ questions = [
     ("Do you have a screen lock (PIN/password) on your phone and PC?", 20,
      "Without a screen lock, anyone who finds your device has instant access to everything."),
 ]
+
+# Special characters used by the generator (all count as "special" in the password test)
+SPECIAL_CHARS = "!@#$%^&*()-_=+?"
 
 
 def clear_screen():
@@ -64,8 +69,31 @@ def rate(score):
             "The good news is that every tip below is quick to fix and makes an immediate difference.")
 
 
+def generate_password(length=16):
+    """Generates a password that scores 10/10 in test_password:
+    at least 15 characters and at least one uppercase, lowercase, number and special character."""
+    length = max(length, 15)
+
+    # Guarantee one character of each type
+    chars = [
+        secrets.choice(string.ascii_uppercase),
+        secrets.choice(string.ascii_lowercase),
+        secrets.choice(string.digits),
+        secrets.choice(SPECIAL_CHARS),
+    ]
+
+    # Fill the rest with random characters from all types
+    all_chars = string.ascii_letters + string.digits + SPECIAL_CHARS
+    chars += [secrets.choice(all_chars) for _ in range(length - len(chars))]
+
+    # Shuffle so the guaranteed characters aren't always at the start
+    secrets.SystemRandom().shuffle(chars)
+    return "".join(chars)
+
+
 def test_password():
-    """Rates a password out of 10: up to 6 points for length, 1 point per character type."""
+    """Rates a password out of 10: up to 6 points for length, 1 point per character type.
+    Returns the score."""
     password = getpass.getpass("\nType the password you want to test (it stays hidden): ")
     length = len(password)
 
@@ -107,6 +135,16 @@ def test_password():
     else:
         print("Very weak. Change this password as soon as possible.")
 
+    return total
+
+
+def offer_generator():
+    """Offers a generated 10/10 password."""
+    print()
+    if ask_question("Would you like a strong password that scores 10/10?"):
+        print(f"\nYour new password: {generate_password()}")
+        print("Tip: store it in a password manager instead of writing it down.")
+
 
 # --- Ask all questions ---
 score = 0
@@ -137,4 +175,7 @@ if tips:
 # --- Bonus: password tester (not part of the score) ---
 print()
 if ask_question("Bonus: would you like to test how strong your password is?"):
-    test_password()
+    password_score = test_password()
+    # Only offer the generator if the password didn't score 10/10
+    if password_score < 10:
+        offer_generator()
